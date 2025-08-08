@@ -11,7 +11,7 @@ import { AuthStore } from '../../state/auth.store';
   imports: [RouterOutlet, RouterLink, MatToolbarModule, MatButtonModule, NgOptimizedImage],
   template: `
     <mat-toolbar>
-      <img ngSrc="/assets/logo.svg" width="32" height="32" alt="FF Draft" />
+      <!-- <img ngSrc="/assets/logo.svg" width="32" height="32" alt="FF Draft" /> -->
       <a routerLink="/dashboard" class="brand">FF Draft</a>
       <span class="spacer"></span>
       @if (auth.isAuthenticated()) {

@@ -5,23 +5,27 @@ import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, MatCardModule, MatButtonModule],
+  imports: [MatCardModule, MatButtonModule],
   template: `
     <section class="container">
-      <mat-card>
-        <h2>Live Draft</h2>
-        <a mat-flat-button routerLink="/draft/league-123">Join Draft</a>
-      </mat-card>
-
-      <mat-card>
-        <h3>Upcoming Drafts</h3>
-        <ul>
-          <li>League 123 – Today 8:00 PM</li>
-        </ul>
-      </mat-card>
+        <h2>Enter the Draft Room</h2>
+        <button matButton="filled" class="join-draft-btn">Join Draft</button>
     </section>
   `,
-  styles: [`.container{display:grid;gap:16px;padding:16px}`],
+    styles: [`
+        .container {
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; /* center horizontally */ 
+            justify-content: center; /* center vertically */ 
+            min-height: 80dvh; /* fill viewport height (mobile-friendly) */  
+            text-align: center; 
+        }
+        .join-draft-btn {
+            max-width: 300px; 
+            inline-size: 100%;
+        }
+    `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent {}
