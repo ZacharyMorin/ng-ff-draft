@@ -20,7 +20,6 @@ import { AuthStore } from '../../state/auth.store';
         <a routerLink="/login" mat-button>Login</a>
       }
     </mat-toolbar>
-    <div>Test</div>
     <router-outlet />
   `,
   styles: [`
