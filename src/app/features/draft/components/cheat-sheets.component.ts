@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { PlayersStore } from '../../../state/players.store';
 
 @Component({
   selector: 'cheat-sheets',
@@ -15,21 +16,25 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
       </mat-button-toggle-group>
     </header>
 
-    <div class="grid">
-      @for (n of Array.from({length: 5}).keys(); track n) {
-        <section class="col">
-          <h4>Tier {{ n+1 }}</h4>
-          <ul>
-            @for (i of [1,2,3,4]; track i) {
-              <li class="row">
-                <span class="name">Player {{ n+1 }}.{{ i }}</span>
-                <span class="meta">BYE 10 • Tier {{ n+1 }}</span>
-              </li>
-            }
-          </ul>
-        </section>
-      }
-    </div>
+    @if (loading()) {
+      <p class="loading">Loading players…</p>
+    } @else {
+      <div class="grid">
+        @for (tier of filteredTiers(); track tier) {
+          <section class="col">
+            <h4>Tier {{ tier }}</h4>
+            <ul>
+              @for (p of filteredPlayersByTier()[tier]; track p.id) {
+                <li class="row">
+                  <span class="name">{{ p.name }} ({{ p.pos }})</span>
+                  <span class="meta">BYE {{ p.bye }} • {{ p.team }}</span>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+      </div>
+    }
   `,
   styles: [`
     .filters{display:flex;justify-content:flex-end;padding:8px}
@@ -40,10 +45,32 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
     .row{display:flex;justify-content:space-between;padding:6px;border-bottom:1px solid rgba(0,0,0,.08)}
     .name{font-weight:500}
     .meta{opacity:.7}
+    .loading{padding:16px;text-align:center;opacity:.7}
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CheatSheetsComponent {
+  private readonly playersStore = inject(PlayersStore);
   mode = signal<'overall'|'qb'|'rb'|'wr'|'te'>('overall');
-Array: any;
+
+  // Kick off loading on first instantiation
+  private _init = effect(() => { this.playersStore.loadAllOnce(); });
+
+  loading = computed(() => this.playersStore.loading());
+
+  // Derived filtered players-by-tier respecting selected mode (position)
+  filteredPlayersByTier = computed(() => {
+    const map = this.playersStore.playersByTier() as Record<number, import('../../../features/models/domain').Player[]>;
+    const mode = this.mode();
+    if (mode === 'overall') return map;
+    const filtered: typeof map = {};
+    for (const tier of Object.keys(map)) {
+      const tNum = +tier;
+      const list = map[tNum].filter((p: import('../../../features/models/domain').Player) => p.pos.toLowerCase() === mode);
+      if (list.length) filtered[tNum] = list;
+    }
+    return filtered;
+  });
+
+  filteredTiers = computed(() => Object.keys(this.filteredPlayersByTier()).map(Number).sort((a,b)=>a-b));
 }
