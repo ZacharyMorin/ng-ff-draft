@@ -1,6 +1,6 @@
 import { inject, Injectable, computed, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { PlayersService, PlayerDoc, Pos } from '../features/data/players.service';
+import { PlayersService, PlayerDoc, Pos } from '../services/players.service';
 import { Draft, Pick, Team } from '../features/models/domain';
 
 @Injectable({ providedIn: 'root' })
